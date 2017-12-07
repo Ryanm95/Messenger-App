@@ -42,42 +42,48 @@ public class client extends JFrame implements ActionListener
         // create buttons
         connected = false;
 
-        upperPanel.add ( new JLabel ("Message: ", JLabel.RIGHT) );
-        message = new JTextField ("");
-        message.addActionListener( this );
-        upperPanel.add( message );
+//        upperPanel.add ( new JLabel ("Message: ", JLabel.RIGHT) );
+//        message = new JTextField ("");
+//        message.addActionListener( this );
+//        upperPanel.add( message );
 
-        sendButton = new JButton( "Send Message" );
-        sendButton.addActionListener( this );
-        sendButton.setEnabled (false);
-        upperPanel.add( sendButton );
+//        sendButton = new JButton( "Send Message" );
+//        sendButton.addActionListener( this );
+//        sendButton.setEnabled (false);
+        //upperPanel.add( sendButton );
 
         connectButton = new JButton( "Connect to Server" );
         connectButton.addActionListener( this );
         upperPanel.add( connectButton );
 
-        upperPanel.add ( new JLabel ("Server Address: ", JLabel.RIGHT) );
+        upperPanel.add ( new JLabel ("Server Address: ", JLabel.LEFT) );
         machineInfo = new JTextField ("127.0.0.1");
         upperPanel.add( machineInfo );
 
-        upperPanel.add ( new JLabel ("Server Port: ", JLabel.RIGHT) );
+        upperPanel.add ( new JLabel ("Server Port: ", JLabel.LEFT) );
         portInfo = new JTextField ("");
         upperPanel.add( portInfo );
 
-//        JPanel primes = new JPanel(new GridLayout(3,1));
-//        primeOne = new JTextField();
-//        primes.add(primeOne);
-//
-//        primeTwo = new JTextField();
-//        primes.add(primeTwo);
-//        container.add(primes, BorderLayout.LINE_START);
-
         history = new JTextArea ( 10, 20 );
         history.setEditable(false);
-        container.add( new JScrollPane(history), BorderLayout.SOUTH );
+        container.add( new JScrollPane(history), BorderLayout.CENTER );
+
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        JPanel sendMessage = new JPanel(new GridLayout(2,2));
+        sendMessage.add ( new JLabel ("Message: ", JLabel.RIGHT) );
+        message = new JTextField ("");
+        message.addActionListener( this );
+        sendMessage.add( message );
+        sendButton = new JButton( "Send Message" );
+        sendButton.addActionListener( this );
+        sendButton.setEnabled (false);
+        sendMessage.add(sendButton);
+        bottomPanel.add(sendMessage);
+
+        container.add(bottomPanel, BorderLayout.SOUTH);
 
         setupMenu();   //builds menu
-        setSize( 500, 400 );
+        setSize( 500, 500 );
         setVisible( true );
 
     } // end CountDown constructor
@@ -185,6 +191,7 @@ public class client extends JFrame implements ActionListener
         public void actionPerformed(ActionEvent e){
             int numOne = Integer.parseInt(numberOne.getText());
             int numTwo = Integer.parseInt(numberTwo.getText());
+
             if(!isPrime(numOne)){
                 JOptionPane.showMessageDialog(client.this,
                         "First number is not prime... try another number",
