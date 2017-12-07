@@ -3,6 +3,7 @@ import java.net.*;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Vector;
 import javax.swing.*;
 
 public class client extends JFrame implements ActionListener
@@ -17,7 +18,9 @@ public class client extends JFrame implements ActionListener
     private JMenuBar bar = new JMenuBar();
     private JTextField numberOne = new JTextField(3);
     private JTextField numberTwo = new JTextField(3);
-
+    Vector<String> members;                                     // names of people in the chat
+    Vector<JButton> memberButton;                               // buttons with members names on them
+    Vector<String> selectedMembers;                             // names of members that mesage will sent to
 
     // Network Items
     boolean connected;
@@ -57,10 +60,12 @@ public class client extends JFrame implements ActionListener
 
         history = new JTextArea ( 10, 20 );
         history.setEditable(false);
-        container.add( new JScrollPane(history), BorderLayout.CENTER );
+        container.add( new JScrollPane(history));
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         JPanel sendMessage = new JPanel(new GridLayout(2,2));
+        JPanel groupPanel = new JPanel();
+        groupPanel.setLayout(new BoxLayout(groupPanel, BoxLayout.Y_AXIS));
         sendMessage.add ( new JLabel ("Message: ", JLabel.RIGHT) );
         message = new JTextField ("");
         message.addActionListener( this );
@@ -71,11 +76,12 @@ public class client extends JFrame implements ActionListener
         sendMessage.add ( new JLabel ("", JLabel.RIGHT) );
         sendMessage.add(sendButton);
         bottomPanel.add(sendMessage);
+        bottomPanel.add(groupPanel, BorderLayout.WEST);
 
         container.add(bottomPanel, BorderLayout.SOUTH);
 
         setupMenu();   //builds menu
-        setSize( 500, 500 );
+        setSize( 800, 500 );
         setVisible( true );
 
     } // end CountDown constructor
