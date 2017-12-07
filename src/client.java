@@ -68,6 +68,7 @@ public class client extends JFrame implements ActionListener
         sendButton = new JButton( "Send Message" );
         sendButton.addActionListener( this );
         sendButton.setEnabled (false);
+        sendMessage.add ( new JLabel ("", JLabel.RIGHT) );
         sendMessage.add(sendButton);
         bottomPanel.add(sendMessage);
 
@@ -200,7 +201,7 @@ public class client extends JFrame implements ActionListener
             }
             if(numOne * numTwo <= 127){
                 JOptionPane.showMessageDialog(client.this,
-                        "Product of numbers is too small... needs to be greater than 127",
+                        "The 2 numbers aren't large enough",
                         "Too Small",JOptionPane.PLAIN_MESSAGE );
             }
             else if(isPrime(numTwo) && isPrime(numOne)){

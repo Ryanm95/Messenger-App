@@ -21,14 +21,13 @@ public class RSA
     // decryption value
     private BigInteger d;
 
-
     // ????
     private int bitlength = 1024;
     private Random     r;
 
 
     // class constructor 1
-    public RSA()
+    public RSA(int val1, int val2)
     {
         //int pVal, int qVal
         r = new Random();
