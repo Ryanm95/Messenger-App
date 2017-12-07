@@ -52,17 +52,18 @@ public class client extends JFrame implements ActionListener
 //        sendButton.setEnabled (false);
         //upperPanel.add( sendButton );
 
-        connectButton = new JButton( "Connect to Server" );
-        connectButton.addActionListener( this );
-        upperPanel.add( connectButton );
-
-        upperPanel.add ( new JLabel ("Server Address: ", JLabel.LEFT) );
+        upperPanel.add ( new JLabel ("Server Address: ", JLabel.RIGHT) );
         machineInfo = new JTextField ("127.0.0.1");
         upperPanel.add( machineInfo );
 
-        upperPanel.add ( new JLabel ("Server Port: ", JLabel.LEFT) );
+        upperPanel.add ( new JLabel ("Server Port: ", JLabel.RIGHT) );
         portInfo = new JTextField ("");
         upperPanel.add( portInfo );
+
+        upperPanel.add ( new JLabel ("", JLabel.RIGHT) );
+        connectButton = new JButton( "Connect to Server" );
+        connectButton.addActionListener( this );
+        upperPanel.add( connectButton );
 
         history = new JTextArea ( 10, 20 );
         history.setEditable(false);
@@ -304,7 +305,7 @@ class CommunicationReadThread extends Thread
         in = inparam;
         gui = ec3;
         start();
-        gui.history.insert ("Communicating with Port\n", 0);
+        gui.history.insert ("Communicating with Server\n", 0);
 
     }
 

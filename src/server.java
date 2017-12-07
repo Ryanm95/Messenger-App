@@ -13,13 +13,12 @@ public class server extends JFrame {
     JLabel portInfo;
     JTextArea history;
     private boolean running;
-    private static HashSet<String> names = new HashSet<String>();
-    private static HashSet<PrintWriter> writers = new HashSet<PrintWriter>();
 
     // Network Items
     boolean serverContinue;
     ServerSocket serverSocket;
-    Vector <PrintWriter> outStreamList;
+    //Vector <pair<String,PrintWriter>> outStreamList;
+    Vector <PrintWriter> names;
 
     // set up GUI
     public server()
@@ -27,7 +26,8 @@ public class server extends JFrame {
         super( "Server" );
 
         // set up the shared outStreamList
-        outStreamList = new Vector<PrintWriter>();
+        //outStreamList = new Vector<PrintWriter>();
+        names = new Vector<PrintWriter>();
 
         // get content pane and set its layout
         Container container = getContentPane();
@@ -106,7 +106,7 @@ class ConnectionThread extends Thread
                 {
                     System.out.println ("Waiting for Connection");
                     gui.ssButton.setText("Stop Listening");
-                    new CommunicationThread (gui.serverSocket.accept(), gui, gui.outStreamList);
+                    new CommunicationThread (gui.serverSocket.accept(), gui, /*gui.outStreamList,*/ gui.names);
                 }
             }
             catch (IOException e)
@@ -141,16 +141,19 @@ class CommunicationThread extends Thread
     private Socket clientSocket;
     private server gui;
     private Vector<PrintWriter> outStreamList;
+    //private Vector <pair<String,PrintWriter>> outStreamList;
+    private Vector<PrintWriter> names;
 
 
 
     public CommunicationThread (Socket clientSoc, server ec3,
-                                Vector<PrintWriter> oSL)
+                                /*Vector<PrintWriter> oSL,*/ Vector<PrintWriter> n)
     {
         clientSocket = clientSoc;
         gui = ec3;
-        outStreamList = oSL;
-        gui.history.insert ("Comminucating with Port" + clientSocket.getLocalPort()+"\n", 0);
+        names = n;
+        //outStreamList = oSL;
+        gui.history.insert ("Comminucating with Port " + clientSocket.getLocalPort()+"\n", 0);
         start();
     }
 
@@ -162,6 +165,7 @@ class CommunicationThread extends Thread
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),
                     true);
             outStreamList.add(out);
+            System.out.println (out);
 
             BufferedReader in = new BufferedReader(
                     new InputStreamReader( clientSocket.getInputStream()));
@@ -170,15 +174,13 @@ class CommunicationThread extends Thread
 
             while ((inputLine = in.readLine()) != null)
             {
-                System.out.println ("Server: " + inputLine);
-                gui.history.insert (inputLine+"\n", 0);
+                gui.history.insert ("Client: " + inputLine+"\n", 0);
 
                 //TODO::: This is what we change
                 // Loop through the outStreamList and send to all "active" streams
                 //out.println(inputLine);
                 for ( PrintWriter out1: outStreamList )
                 {
-                    System.out.println ("Sending Message");
                     out1.println (inputLine);
                 }
 
