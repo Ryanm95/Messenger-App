@@ -15,6 +15,7 @@ public class client extends JFrame implements ActionListener
     JTextField portInfo;
     JTextField message;
     JTextArea history;
+    private JLabel header = new JLabel("Users In Chat");
     private JMenuBar bar = new JMenuBar();
     private JTextField numberOne = new JTextField(3);
     private JTextField numberTwo = new JTextField(3);
@@ -77,6 +78,7 @@ public class client extends JFrame implements ActionListener
         sendMessage.add(sendButton);
         bottomPanel.add(sendMessage);
         bottomPanel.add(groupPanel, BorderLayout.WEST);
+        groupPanel.add(header);
 
         container.add(bottomPanel, BorderLayout.SOUTH);
 
