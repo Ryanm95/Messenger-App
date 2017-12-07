@@ -29,7 +29,4 @@ public class pair{
     public void setName(String n){
         this.name = n;
     }
-    public void setAddress(PrintWriter addr){
-        this.address = addr;
-    }
 }

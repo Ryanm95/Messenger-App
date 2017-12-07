@@ -13,13 +13,12 @@ public class server extends JFrame {
     JLabel portInfo;
     JTextArea history;
     private boolean running;
-    private static HashSet<String> names = new HashSet<String>();
-    private static HashSet<PrintWriter> writers = new HashSet<PrintWriter>();
 
     // Network Items
     boolean serverContinue;
     ServerSocket serverSocket;
-    Vector <PrintWriter> outStreamList;
+    Vector <pair> outStreamList;
+    Vector <String> names;
 
     // set up GUI
     public server()
@@ -27,7 +26,8 @@ public class server extends JFrame {
         super( "Server" );
 
         // set up the shared outStreamList
-        outStreamList = new Vector<PrintWriter>();
+        outStreamList = new Vector<pair>();
+        names = new Vector<String >();
 
         // get content pane and set its layout
         Container container = getContentPane();
@@ -106,7 +106,7 @@ class ConnectionThread extends Thread
                 {
                     System.out.println ("Waiting for Connection");
                     gui.ssButton.setText("Stop Listening");
-                    new CommunicationThread (gui.serverSocket.accept(), gui, gui.outStreamList);
+                    new CommunicationThread (gui.serverSocket.accept(), gui, gui.outStreamList, gui.names);
                 }
             }
             catch (IOException e)
@@ -140,16 +140,18 @@ class CommunicationThread extends Thread
     //private boolean serverContinue = true;
     private Socket clientSocket;
     private server gui;
-    private Vector<PrintWriter> outStreamList;
+    private Vector<pair> outStreamList;
+    private Vector<String> names;
 
 
 
     public CommunicationThread (Socket clientSoc, server ec3,
-                                Vector<PrintWriter> oSL)
+                                Vector<pair> oSL, Vector<String> n )
     {
         clientSocket = clientSoc;
         gui = ec3;
         outStreamList = oSL;
+        names = n;
         gui.history.insert ("Comminucating with Port" + clientSocket.getLocalPort()+"\n", 0);
         start();
     }
@@ -161,7 +163,8 @@ class CommunicationThread extends Thread
         try {
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),
                     true);
-            outStreamList.add(out);
+            pair holder = new pair("name", out);
+            outStreamList.addElement(holder);
 
             BufferedReader in = new BufferedReader(
                     new InputStreamReader( clientSocket.getInputStream()));
@@ -176,10 +179,10 @@ class CommunicationThread extends Thread
                 //TODO::: This is what we change
                 // Loop through the outStreamList and send to all "active" streams
                 //out.println(inputLine);
-                for ( PrintWriter out1: outStreamList )
+                for ( pair out1: outStreamList )
                 {
                     System.out.println ("Sending Message");
-                    out1.println (inputLine);
+                    out1.getAddress().println (inputLine);
                 }
 
                 if (inputLine.equals("Bye."))

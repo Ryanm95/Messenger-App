@@ -315,7 +315,7 @@ class CommunicationReadThread extends Thread
             while ((inputLine = in.readLine()) != null)
             {
                 System.out.println ("Client: " + inputLine);
-                gui.history.insert ("You: " + inputLine + "\n", 0);
+                gui.history.insert ("UserName Here: " + inputLine + "\n", 0);
 
                 if (inputLine.equals("Bye."))
                     break;
