@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.util.*;
 
 public class server extends JFrame {
-
+//
     // GUI items
     JButton ssButton;
     JLabel machineInfo;
