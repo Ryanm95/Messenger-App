@@ -64,12 +64,20 @@ public class client extends JFrame implements ActionListener
         portInfo = new JTextField ("");
         upperPanel.add( portInfo );
 
+        JPanel primes = new JPanel(new GridLayout(3,1));
+        primeOne = new JTextField();
+        primes.add(primeOne);
+
+        primeTwo = new JTextField();
+        primes.add(primeTwo);
+        container.add(primes, BorderLayout.LINE_START);
+
         history = new JTextArea ( 10, 20 );
         history.setEditable(false);
-        container.add( new JScrollPane(history) ,  BorderLayout.EAST);
+        container.add( new JScrollPane(history), BorderLayout.SOUTH );
 
         setupMenu();   //builds menu
-        setSize( 500, 250 );
+        setSize( 500, 400 );
         setVisible( true );
 
     } // end CountDown constructor
