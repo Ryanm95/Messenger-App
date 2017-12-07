@@ -190,13 +190,18 @@ public class client extends JFrame implements ActionListener
             }
             if(!isPrime(numTwo)){
                 JOptionPane.showMessageDialog(client.this,
-                        "First number is not prime... try another number",
+                        "Second number is not prime... try another number",
                         "Not Prime",JOptionPane.PLAIN_MESSAGE );
             }
             if(numOne == numTwo){
                 JOptionPane.showMessageDialog(client.this,
                         "Numbers cannot be the same... try changing one of the numbers",
                         "Not Prime",JOptionPane.PLAIN_MESSAGE );
+            }
+            if(numOne * numTwo <= 127){
+                JOptionPane.showMessageDialog(client.this,
+                        "Product of numbers is too small... needs to be greater than 127",
+                        "Too Small",JOptionPane.PLAIN_MESSAGE );
             }
             else if(isPrime(numTwo) && isPrime(numOne)){
                 JOptionPane.getRootFrame().dispose();
