@@ -14,9 +14,9 @@ public class client extends JFrame implements ActionListener
     JTextField portInfo;
     JTextField message;
     JTextArea history;
-    JTextField primeOne;
-    JTextField primeTwo;
     private JMenuBar bar = new JMenuBar();
+    private JTextField numberOne = new JTextField(3);
+    private JTextField numberTwo = new JTextField(3);
 
 
     // Network Items
@@ -64,13 +64,13 @@ public class client extends JFrame implements ActionListener
         portInfo = new JTextField ("");
         upperPanel.add( portInfo );
 
-        JPanel primes = new JPanel(new GridLayout(3,1));
-        primeOne = new JTextField();
-        primes.add(primeOne);
-
-        primeTwo = new JTextField();
-        primes.add(primeTwo);
-        container.add(primes, BorderLayout.LINE_START);
+//        JPanel primes = new JPanel(new GridLayout(3,1));
+//        primeOne = new JTextField();
+//        primes.add(primeOne);
+//
+//        primeTwo = new JTextField();
+//        primes.add(primeTwo);
+//        container.add(primes, BorderLayout.LINE_START);
 
         history = new JTextArea ( 10, 20 );
         history.setEditable(false);
@@ -137,19 +137,85 @@ public class client extends JFrame implements ActionListener
         primeMenu.add(pickItem);
         pickItem.addActionListener(
                 e -> JOptionPane.showMessageDialog( this,
-                        "Set up auto pick\n", "Auto Pick From File", JOptionPane.PLAIN_MESSAGE)
+                        "Auto picked 2 different prime numbers\n", "Auto Pick From File", JOptionPane.PLAIN_MESSAGE)
         );
 
         JMenuItem enterItem = new JMenuItem("Enter Numbers");
         primeMenu.add(enterItem);
         enterItem.addActionListener(
-                e -> JOptionPane.showMessageDialog( this,
-                        "Set up enter numbers\n", "Enter Prime Numbers", JOptionPane.PLAIN_MESSAGE)
+                e -> {
+                   setupDialog();
+                }
         );
 
         setJMenuBar(bar);
         bar.add(fileMenu);
         bar.add(primeMenu);
+    }
+
+    private void setupDialog(){
+        JLabel primeOne = new JLabel("First Number: ");
+        JLabel primeTwo = new JLabel("Second Number: ");
+        JButton button = new JButton("Check/Enter");
+        button.addActionListener(new buttonListener());
+        JDialog dialog = new JDialog();
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel.add(primeOne, gbc);
+        gbc.gridy++;
+        panel.add(primeTwo, gbc);
+
+        gbc.gridx++;
+        gbc.gridy = 0;
+        panel.add(numberOne, gbc);
+        gbc.gridy++;
+        panel.add(numberTwo, gbc);
+        gbc.gridy++;
+        panel.add(button, gbc);
+
+        dialog.add(panel);
+        dialog.setSize(300,150);
+        dialog.setVisible(true);
+    }
+    class buttonListener implements  ActionListener{          // actionlistener for prime button
+        public void actionPerformed(ActionEvent e){
+            int numOne = Integer.parseInt(numberOne.getText());
+            int numTwo = Integer.parseInt(numberTwo.getText());
+            if(!isPrime(numOne)){
+                JOptionPane.showMessageDialog(client.this,
+                        "First number is not prime... try another number",
+                        "Not Prime",JOptionPane.PLAIN_MESSAGE );
+            }
+            if(!isPrime(numTwo)){
+                JOptionPane.showMessageDialog(client.this,
+                        "First number is not prime... try another number",
+                        "Not Prime",JOptionPane.PLAIN_MESSAGE );
+            }
+            if(numOne == numTwo){
+                JOptionPane.showMessageDialog(client.this,
+                        "Numbers cannot be the same... try changing one of the numbers",
+                        "Not Prime",JOptionPane.PLAIN_MESSAGE );
+            }
+            else if(isPrime(numTwo) && isPrime(numOne)){
+                JOptionPane.getRootFrame().dispose();
+            }
+        }
+    }
+
+    private boolean isPrime(int n) {
+        if (n <= 1) {
+            return false;
+        }
+        for (int i = 2; i < Math.sqrt(n); i++) {
+            if (n % i == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void doSendMessage()
