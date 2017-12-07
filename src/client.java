@@ -14,6 +14,8 @@ public class client extends JFrame implements ActionListener
     JTextField portInfo;
     JTextField message;
     JTextArea history;
+    JTextField primeOne;
+    JTextField primeTwo;
     private JMenuBar bar = new JMenuBar();
 
 
@@ -62,9 +64,9 @@ public class client extends JFrame implements ActionListener
         portInfo = new JTextField ("");
         upperPanel.add( portInfo );
 
-        history = new JTextArea ( 10, 40 );
+        history = new JTextArea ( 10, 20 );
         history.setEditable(false);
-        container.add( new JScrollPane(history) ,  BorderLayout.CENTER);
+        container.add( new JScrollPane(history) ,  BorderLayout.EAST);
 
         setupMenu();   //builds menu
         setSize( 500, 250 );
@@ -128,6 +130,7 @@ public class client extends JFrame implements ActionListener
         try
         {
             out.println(message.getText());
+            message.setText("");
             //history.insert ("From Server: " + in.readLine() + "\n" , 0);
         }
         catch (Exception e)
