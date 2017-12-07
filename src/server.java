@@ -24,7 +24,7 @@ public class server extends JFrame {
     // set up GUI
     public server()
     {
-        super( "Echo Server" );
+        super( "Server" );
 
         // set up the shared outStreamList
         outStreamList = new Vector<PrintWriter>();
@@ -173,6 +173,7 @@ class CommunicationThread extends Thread
                 System.out.println ("Server: " + inputLine);
                 gui.history.insert (inputLine+"\n", 0);
 
+                //TODO::: This is what we change
                 // Loop through the outStreamList and send to all "active" streams
                 //out.println(inputLine);
                 for ( PrintWriter out1: outStreamList )

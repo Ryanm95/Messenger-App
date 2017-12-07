@@ -28,7 +28,7 @@ public class client extends JFrame implements ActionListener
     // set up GUI
     public client()
     {
-        super( "Echo Client" );
+        super( "Client" );
 
         // get content pane and set its layout
         Container container = getContentPane();
@@ -129,8 +129,27 @@ public class client extends JFrame implements ActionListener
         exitItem.addActionListener(
                 e -> System.exit(0)
         );
+
+
+        JMenu primeMenu = new JMenu("Prime Numbers");                     // file menu
+
+        JMenuItem pickItem = new JMenuItem("Auto-Pick Numbers");
+        primeMenu.add(pickItem);
+        pickItem.addActionListener(
+                e -> JOptionPane.showMessageDialog( this,
+                        "Set up auto pick\n", "Auto Pick From File", JOptionPane.PLAIN_MESSAGE)
+        );
+
+        JMenuItem enterItem = new JMenuItem("Enter Numbers");
+        primeMenu.add(enterItem);
+        enterItem.addActionListener(
+                e -> JOptionPane.showMessageDialog( this,
+                        "Set up enter numbers\n", "Enter Prime Numbers", JOptionPane.PLAIN_MESSAGE)
+        );
+
         setJMenuBar(bar);
         bar.add(fileMenu);
+        bar.add(primeMenu);
     }
 
     public void doSendMessage()
@@ -139,7 +158,6 @@ public class client extends JFrame implements ActionListener
         {
             out.println(message.getText());
             message.setText("");
-            //history.insert ("From Server: " + in.readLine() + "\n" , 0);
         }
         catch (Exception e)
         {
@@ -226,9 +244,8 @@ class CommunicationReadThread extends Thread
 
             while ((inputLine = in.readLine()) != null)
             {
-                //history.insert ("From Server: " + in.readLine() + "\n" , 0);
                 System.out.println ("Client: " + inputLine);
-                gui.history.insert ("From Server: " + inputLine + "\n", 0);
+                gui.history.insert ("You: " + inputLine + "\n", 0);
 
                 if (inputLine.equals("Bye."))
                     break;
