@@ -25,4 +25,11 @@ public class pair{
     public PrintWriter getAddress(){
         return this.address;
     }
+
+    public void setName(String n){
+        this.name = n;
+    }
+    public void setAddress(PrintWriter addr){
+        this.address = addr;
+    }
 }

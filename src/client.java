@@ -42,16 +42,6 @@ public class client extends JFrame implements ActionListener
         // create buttons
         connected = false;
 
-//        upperPanel.add ( new JLabel ("Message: ", JLabel.RIGHT) );
-//        message = new JTextField ("");
-//        message.addActionListener( this );
-//        upperPanel.add( message );
-
-//        sendButton = new JButton( "Send Message" );
-//        sendButton.addActionListener( this );
-//        sendButton.setEnabled (false);
-        //upperPanel.add( sendButton );
-
         upperPanel.add ( new JLabel ("Server Address: ", JLabel.RIGHT) );
         machineInfo = new JTextField ("127.0.0.1");
         upperPanel.add( machineInfo );
@@ -119,7 +109,7 @@ public class client extends JFrame implements ActionListener
         serverItem.addActionListener(
                 e -> {
                     server application = new server();
-                    application.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+                    application.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                 }
         );
 
