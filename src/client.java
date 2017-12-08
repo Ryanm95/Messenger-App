@@ -101,6 +101,20 @@ public class client extends JFrame implements ActionListener
         bottomPanel.add(sendMessage);
         bottomPanel.add(groupPanel, BorderLayout.WEST);
         groupPanel.add(header);
+        for(String s : allNames) {
+            JButton temp = new JButton(s);
+
+            temp.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    temp.setEnabled(false);
+                }
+            });
+            groupPanel.add(temp);
+
+
+        }
 
         container.add(bottomPanel, BorderLayout.SOUTH);
 
