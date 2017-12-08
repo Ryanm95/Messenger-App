@@ -5,6 +5,8 @@
                   the clients that receive the messages have to decrypt the message and then the message can be read.
  */
 
+import oracle.jrockit.jfr.StringConstantPool;
+
 import java.net.*;
 import java.io.*;
 import java.awt.*;
@@ -40,12 +42,19 @@ public class client extends JFrame implements ActionListener
     PrintWriter out;
     BufferedReader in;
     public String Name;
-    Vector <String> names;
+    Vector <String> allNames;
+    Vector <String> specificNames;
 
     // set up GUI
     public client()
     {
         super( "Client" );
+
+
+        allNames = new Vector<String>();
+
+        specificNames = new Vector<String>();
+
 
         // get content pane and set its layout
         Container container = getContentPane();
@@ -301,6 +310,9 @@ public class client extends JFrame implements ActionListener
 
             String bytes = bytesToString(message.getText().getBytes());
 
+            // create a list of clients this message will be going to
+
+
             // send the message
             out.println(encryption);
             out.println(pubKey);
@@ -329,7 +341,7 @@ public class client extends JFrame implements ActionListener
                         echoSocket.getInputStream()));
 
                 // start a new thread to read from the socket
-                new CommunicationReadThread (in, this);
+                new CommunicationReadThread (in, this, allNames, specificNames);
 
                 sendButton.setEnabled(true);
                 connected = true;
@@ -386,12 +398,16 @@ class CommunicationReadThread extends Thread
     //private Socket clientSocket;
     private client gui;
     private BufferedReader in;
+    private Vector<String> allNames;
+    private Vector<String> specificNames;
 
 
-    public CommunicationReadThread (BufferedReader inparam, client ec3)
+    public CommunicationReadThread (BufferedReader inparam, client ec3, Vector<String> all, Vector<String> specific)
     {
         in = inparam;
         gui = ec3;
+        allNames = all;
+        specificNames = specific;
         start();
         gui.history.insert ("Communicating with Server\n", 0);
 
@@ -409,9 +425,9 @@ class CommunicationReadThread extends Thread
             {
                 // get the public key
                 String pubKey = in.readLine();
-                String allNames = in.readLine();
-                System.out.println(allNames);
+                String temp = in.readLine();
 
+                parseNames(allNames, temp);
 
                 byte[] bytes = stringToBytes(inputLine);
 
@@ -444,6 +460,19 @@ class CommunicationReadThread extends Thread
         {
             System.err.println("Problem with Client Read");
             //System.exit(1);
+        }
+    }
+
+
+    private static void parseNames(Vector<String> list, String names)
+    {
+        String[] listNames = names.split(" ");
+
+        list.clear();
+
+        for (String s : listNames)
+        {
+            list.add(s);
         }
     }
 
