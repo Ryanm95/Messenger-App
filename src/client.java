@@ -505,8 +505,12 @@ class CommunicationReadThread extends Thread
                 parseNames(allNames, temp);
 
 
-                btns[0].setText(allNames.get(0));
-                btns[0].setVisible(true);
+                for (int i = 0; i < allNames.size(); i++)
+                {
+                    btns[i].setText(allNames.get(i));
+                    btns[i].setVisible(true);
+                }
+
 
 
 
