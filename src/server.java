@@ -1,7 +1,6 @@
 /*
     Server class: Handles the server side of the connection. The server allows multiple users to connect to one central server.
                   The server receives an encrypted message and sends to the users for the user to decrypt.
-
  */
 
 import java.net.*;
@@ -14,26 +13,26 @@ import java.util.*;
 public class server extends JFrame {
 
     // GUI items
-    JButton ssButton;       // start listening
-    JLabel machineInfo;     // label for machine info
-    JLabel portInfo;        // port info
-    JTextArea history;      // message history
+    JButton ssButton;
+    JLabel machineInfo;
+    JLabel portInfo;
+    JTextArea history;
     private boolean running;
 
     // Network Items
     boolean serverContinue;
     ServerSocket serverSocket;
-    Vector <pair> outStreamList;
-    Vector <String> names;
+    Vector <PrintWriter> outStreamList;
+    Vector <String> names;  //names of people in the program
 
     // set up GUI
     public server()
     {
-        super( "Server" );
+        super( "Echo Server" );
 
-        // set up the shared outStreamList
-        outStreamList = new Vector<pair>();
-        names = new Vector<String >();
+        // set up the shared outStreamList and names vector
+        outStreamList = new Vector<PrintWriter>();
+        names = new Vector<String>();
 
         // get content pane and set its layout
         Container container = getContentPane();
@@ -48,14 +47,14 @@ public class server extends JFrame {
         String machineAddress = null;
         try
         {
-            InetAddress addr = InetAddress.getLocalHost();      // connect to server
-            machineAddress = addr.getHostAddress();             // get local host
+            InetAddress addr = InetAddress.getLocalHost();
+            machineAddress = addr.getHostAddress();
         }
         catch (UnknownHostException e)
         {
             machineAddress = "127.0.0.1";
         }
-        machineInfo = new JLabel (machineAddress);                  // add things to the client class
+        machineInfo = new JLabel (machineAddress);
         container.add( machineInfo );
         portInfo = new JLabel (" Not Listening ");
         container.add( portInfo );
@@ -105,7 +104,7 @@ class ConnectionThread extends Thread
         try
         {
             gui.serverSocket = new ServerSocket(0);
-            gui.portInfo.setText("Listening on Port: " + gui.serverSocket.getLocalPort());          // listening to clients
+            gui.portInfo.setText("Listening on Port: " + gui.serverSocket.getLocalPort());
             System.out.println ("Connection Socket Created");
             try {
                 while (gui.serverContinue)
@@ -115,7 +114,7 @@ class ConnectionThread extends Thread
                     new CommunicationThread (gui.serverSocket.accept(), gui, gui.outStreamList, gui.names);
                 }
             }
-            catch (IOException e)                               // exception
+            catch (IOException e)
             {
                 System.err.println("Accept failed.");
                 System.exit(1);
@@ -141,54 +140,94 @@ class ConnectionThread extends Thread
 }
 
 
-class CommunicationThread extends Thread                // communication thread
+class CommunicationThread extends Thread
 {
     //private boolean serverContinue = true;
     private Socket clientSocket;
     private server gui;
-    private Vector<pair> outStreamList;                 // pair holds name and address of the user
+    private Vector<PrintWriter> outStreamList;
     private Vector<String> names;
+    PrintWriter out;
+
+
+    // Function that gets all the names and
+    // combines them into a string
+    private String combineNames(){
+        String name = null;
+        for (String n : names) {
+            if (n != null){
+                name += n + " ";
+            }
+        }
+        return name;
+
+    }
 
 
 
     public CommunicationThread (Socket clientSoc, server ec3,
-                                Vector<pair> oSL, Vector<String> n )
+                                Vector<PrintWriter> oSL, Vector<String> n)
     {
         clientSocket = clientSoc;
         gui = ec3;
         outStreamList = oSL;
         names = n;
-        gui.history.insert ("Comminucating with Port" + clientSocket.getLocalPort()+"\n", 0);       // adds message to history
+
+        BufferedReader in;
+        //PrintWriter out;
+        String inputLine;
+
+        //read in the clients username
+        try {
+            in = new BufferedReader(
+                    new InputStreamReader( clientSocket.getInputStream()));
+            inputLine = in.readLine();
+
+            out = new PrintWriter(clientSocket.getOutputStream(),
+                    true);
+
+            outStreamList.add(out);
+            names.add(inputLine);
+
+            gui.history.insert (inputLine + " :Connected\n", 0); //display connected
+
+            //send list of people to client side
+            for ( PrintWriter out1: outStreamList ) {
+                String name = combineNames();
+                out1.println (name);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         start();
     }
 
-    public void run()           // run communication
+    public void run()
     {
         System.out.println ("New Communication Thread Started");
 
         try {
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),
-                    true);
-            pair holder = new pair("name", out);
-            outStreamList.addElement(holder);
+//            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),
+//                    true);
+//            outStreamList.add(out);
 
             BufferedReader in = new BufferedReader(
                     new InputStreamReader( clientSocket.getInputStream()));
 
             String inputLine;
 
-            while ((inputLine = in.readLine()) != null)         // sends to each person
+            while ((inputLine = in.readLine()) != null)
             {
                 System.out.println ("Server: " + inputLine);
                 gui.history.insert (inputLine+"\n", 0);
 
-                //TODO::: This is what we change
                 // Loop through the outStreamList and send to all "active" streams
                 //out.println(inputLine);
-                for ( pair out1: outStreamList )
+                for ( PrintWriter out1: outStreamList )
                 {
                     System.out.println ("Sending Message");
-                    out1.getAddress().println (inputLine);
+                    out1.println (inputLine);
                 }
 
                 if (inputLine.equals("Bye."))
@@ -198,7 +237,7 @@ class CommunicationThread extends Thread                // communication thread
                     gui.serverContinue = false;
             }
 
-            outStreamList.remove(out);                      // disconnect from the server
+            outStreamList.remove(out);
             out.close();
             in.close();
             clientSocket.close();

@@ -15,9 +15,9 @@ import javax.swing.*;
 public class client extends JFrame implements ActionListener
 {
     // GUI items
-    JButton sendButton;             // send button
-    JButton connectButton;          // connect to server button
-    JTextField machineInfo;         // machine info
+    JButton sendButton;
+    JButton connectButton;
+    JTextField machineInfo;
     JTextField portInfo;
     JTextField message;
     JTextArea history;
@@ -25,15 +25,19 @@ public class client extends JFrame implements ActionListener
     private JMenuBar bar = new JMenuBar();
     private JTextField numberOne = new JTextField(3);
     private JTextField numberTwo = new JTextField(3);
+    private JTextField answer = new JTextField(7);
+    private JDialog dialog = new JDialog();
     Vector<String> members;                                     // names of people in the chat
     Vector<JButton> memberButton;                               // buttons with members names on them
-    Vector<String> selectedMembers;                             // names of members that message will sent to
+    Vector<String> selectedMembers;                             // names of members that mesage will sent to
 
     // Network Items
     boolean connected;
     Socket echoSocket;
     PrintWriter out;
     BufferedReader in;
+    public String Name;
+    Vector <String> names;
 
     // set up GUI
     public client()
@@ -41,8 +45,8 @@ public class client extends JFrame implements ActionListener
         super( "Client" );
 
         // get content pane and set its layout
-        Container container = getContentPane();             // container
-        container.setLayout (new BorderLayout ());          // container layout
+        Container container = getContentPane();
+        container.setLayout (new BorderLayout ());
 
         // set up the North panel
         JPanel upperPanel = new JPanel ();
@@ -52,7 +56,7 @@ public class client extends JFrame implements ActionListener
         // create buttons
         connected = false;
 
-        upperPanel.add ( new JLabel ("Server Address: ", JLabel.RIGHT) );           // set up server info and all of its components
+        upperPanel.add ( new JLabel ("Server Address: ", JLabel.RIGHT) );
         machineInfo = new JTextField ("127.0.0.1");
         upperPanel.add( machineInfo );
 
@@ -68,10 +72,6 @@ public class client extends JFrame implements ActionListener
         history = new JTextArea ( 10, 20 );
         history.setEditable(false);
         container.add( new JScrollPane(history));
-
-        /*
-            Sets up the bottom part of the client GUI
-         */
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         JPanel sendMessage = new JPanel(new GridLayout(2,2));
@@ -92,9 +92,11 @@ public class client extends JFrame implements ActionListener
 
         container.add(bottomPanel, BorderLayout.SOUTH);
 
-        setupMenu();                                        // builds menu
-        setSize( 800, 500 );                  // sets size of window
-        setVisible( true );                                 // make it visible
+        setupMenu();   //builds menu
+        setSize( 800, 500 );
+        setVisible( true );
+        getNameDialog();
+//        System.out.println(Name);
 
     } // end CountDown constructor
 
@@ -113,23 +115,17 @@ public class client extends JFrame implements ActionListener
         }
     }
 
-    /*
-        Sets ups the menu items and all of its functionality
-     */
-
     private void setupMenu(){
-        JMenu fileMenu = new JMenu("File");
+        JMenu fileMenu = new JMenu("File");                     // file menu
 
         JMenuItem aboutItem = new JMenuItem("About");
         fileMenu.add(aboutItem);
         aboutItem.addActionListener(
                 e -> JOptionPane.showMessageDialog( this,
-                        "Authors: Ryan Moran      ->   rmoran8\n" +
-                                  "              Edgar Martinez  ->   emart9\n" +
-                                  "              Faraaz Khan      ->   aknah227\n", "About", JOptionPane.PLAIN_MESSAGE)
+                        "Set up about\n", "About", JOptionPane.PLAIN_MESSAGE)
         );
 
-        JMenuItem serverItem = new JMenuItem("Make Server");        // makes server
+        JMenuItem serverItem = new JMenuItem("Make Server");
         fileMenu.add(serverItem);
         serverItem.addActionListener(
                 e -> {
@@ -138,14 +134,11 @@ public class client extends JFrame implements ActionListener
                 }
         );
 
-        JMenuItem helpItem = new JMenuItem("Help");     // help menu
+        JMenuItem helpItem = new JMenuItem("Help");
         fileMenu.add(helpItem);
         helpItem.addActionListener(
                 e -> JOptionPane.showMessageDialog( this,
-                        "Only one person should open a server in the file menu.\n" +
-                                 "The user can either enter 2 prime numbers in the Prime Numbers menu or have the computer get them from the file.\n" +
-                                 "The program checks if the numbers are prime and if they satisfy the other conditions.\n" +
-                                 "The user enters a message in the message box and clicks send to send the message.\n", "Help", JOptionPane.PLAIN_MESSAGE)
+                        "Set up help\n", "Help", JOptionPane.PLAIN_MESSAGE)
         );
 
         fileMenu.addSeparator();
@@ -169,16 +162,53 @@ public class client extends JFrame implements ActionListener
         primeMenu.add(enterItem);
         enterItem.addActionListener(
                 e -> {
-                   setupDialog();
+                    setupDialog();
                 }
         );
 
-        setJMenuBar(bar);           // adds the menu items to the panel
+        setJMenuBar(bar);
         bar.add(fileMenu);
         bar.add(primeMenu);
     }
 
-    private void setupDialog(){                                     // sets up the dialog box
+//    private void nameSet(){
+//        String n = answer.getText();
+//        Name = n;
+//    }
+
+    private void getNameDialog(){
+        JLabel nameLabel = new JLabel("Name: ");
+
+        JButton button = new JButton("Enter");
+        button.addActionListener(new buttonL());
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel.add(nameLabel, gbc);
+
+        gbc.gridx++;
+        gbc.gridy = 0;
+        panel.add(answer, gbc);
+        gbc.gridy++;
+        panel.add(button, gbc);
+
+        dialog.add(panel);
+        dialog.setSize(300,150);
+        dialog.setVisible(true);
+    }
+    class buttonL implements  ActionListener{          // actionlistener for name button
+        public void actionPerformed(ActionEvent e){
+            Name = answer.getText();
+            dialog.setVisible(false);
+
+
+        }
+    }
+
+    private void setupDialog(){
         JLabel primeOne = new JLabel("First Number: ");
         JLabel primeTwo = new JLabel("Second Number: ");
         JButton button = new JButton("Check/Enter");
@@ -206,6 +236,7 @@ public class client extends JFrame implements ActionListener
         dialog.setSize(300,150);
         dialog.setVisible(true);
     }
+
     class buttonListener implements  ActionListener{          // actionlistener for prime button
         public void actionPerformed(ActionEvent e){
             int numOne = Integer.parseInt(numberOne.getText());
@@ -237,7 +268,7 @@ public class client extends JFrame implements ActionListener
         }
     }
 
-    private boolean isPrime(int n) {                    // function to check if the number is prime
+    private boolean isPrime(int n) {
         if (n <= 1) {
             return false;
         }
@@ -249,11 +280,11 @@ public class client extends JFrame implements ActionListener
         return true;
     }
 
-    public void doSendMessage()                         // send the message
+    public void doSendMessage()
     {
         try
         {
-            out.println(message.getText());
+            out.println(Name + " : " + message.getText());
             message.setText("");
         }
         catch (Exception e)
@@ -262,7 +293,7 @@ public class client extends JFrame implements ActionListener
         }
     }
 
-    public void doManageConnection()                    // manage the connection
+    public void doManageConnection()
     {
         if (connected == false)
         {
@@ -281,6 +312,10 @@ public class client extends JFrame implements ActionListener
 
                 sendButton.setEnabled(true);
                 connected = true;
+                System.out.println(Name);
+                out.println(Name);
+                System.out.println(Name);
+
                 connectButton.setText("Disconnect from Server");
             } catch (NumberFormatException e) {
                 history.insert ( "Server Port must be an integer\n", 0);
@@ -341,8 +376,14 @@ class CommunicationReadThread extends Thread
 
             while ((inputLine = in.readLine()) != null)
             {
-                System.out.println ("Client: " + inputLine);
-                gui.history.insert ("UserName Here: " + inputLine + "\n", 0);
+                //check to see if list is updated
+                if (inputLine.substring(0, 2).equals(null)){
+                    System.out.println("received active list = " + inputLine);
+                }
+
+                else {
+                    gui.history.insert(inputLine + "\n", 0);
+                }
 
                 if (inputLine.equals("Bye."))
                     break;
@@ -359,8 +400,3 @@ class CommunicationReadThread extends Thread
         }
     }
 }
-
-
-
-
-
