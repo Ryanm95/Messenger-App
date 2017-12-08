@@ -194,7 +194,7 @@ class CommunicationThread extends Thread
             //send list of people to client side
             for ( PrintWriter out1: outStreamList ) {
                 String name = combineNames();
-                out1.println (name);
+                //out1.println (name);
             }
 
         } catch (IOException e) {
@@ -216,11 +216,16 @@ class CommunicationThread extends Thread
                     new InputStreamReader( clientSocket.getInputStream()));
 
             String inputLine;
+            String pubKey;
+            String encrypt;
 
             while ((inputLine = in.readLine()) != null)
             {
-                System.out.println ("Server: " + inputLine);
-                gui.history.insert (inputLine+"\n", 0);
+                pubKey = in.readLine();
+                encrypt = in.readLine();
+
+                System.out.println ("Server: " + encrypt);
+                gui.history.insert (encrypt+"\n", 0);
 
                 // Loop through the outStreamList and send to all "active" streams
                 //out.println(inputLine);
@@ -228,6 +233,7 @@ class CommunicationThread extends Thread
                 {
                     System.out.println ("Sending Message");
                     out1.println (inputLine);
+                    out1.println(pubKey);
                 }
 
                 if (inputLine.equals("Bye."))

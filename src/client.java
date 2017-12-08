@@ -9,8 +9,11 @@ import java.net.*;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
 import java.util.Vector;
 import javax.swing.*;
+import java.math.BigInteger;
+
 //
 public class client extends JFrame implements ActionListener
 {
@@ -282,9 +285,25 @@ public class client extends JFrame implements ActionListener
 
     public void doSendMessage()
     {
+        RSA rsa = new RSA(3,7);
+
         try
         {
-            out.println(Name + " : " + message.getText());
+            String pubKey = rsa.getPubKey();
+
+            // encrypt the message
+            byte[] encrypt = rsa.encrypt(message.getText());
+
+            String encryption = Arrays.toString(encrypt);
+
+
+            String bytes = bytesToString(message.getText().getBytes());
+
+            // send the message
+            out.println(encryption);
+            out.println(pubKey);
+            out.println(bytes);
+
             message.setText("");
         }
         catch (Exception e)
@@ -347,6 +366,16 @@ public class client extends JFrame implements ActionListener
 
     }
 
+    private static String bytesToString(byte[] encrypted)
+    {
+        String test = "";
+        for (byte b : encrypted)
+        {
+            test += Byte.toString(b);
+        }
+        return test;
+    }
+
 } // end class EchoServer3
 
 // Class to handle socket reads
@@ -371,18 +400,31 @@ class CommunicationReadThread extends Thread
     {
         System.out.println ("New Communication Thread Started");
 
+        RSA rsa = new RSA(3,7);
         try {
             String inputLine;
 
             while ((inputLine = in.readLine()) != null)
             {
+                // get the public key
+                String pubKey = in.readLine();
+                byte[] bytes = stringToBytes(inputLine);
+
+                // parse the public key
+                BigInteger e = parseVal(pubKey, true);
+                BigInteger n = parseVal(pubKey, false);
+
+                // decrypt the message
+                String decrypt = rsa.decrypt(bytes, e, n);
+
+                System.out.println("HELLO " + decrypt);
                 //check to see if list is updated
                 if (inputLine.substring(0, 2).equals(null)){
                     System.out.println("received active list = " + inputLine);
                 }
 
                 else {
-                    gui.history.insert(inputLine + "\n", 0);
+                    gui.history.insert(decrypt + "\n", 0);
                 }
 
                 if (inputLine.equals("Bye."))
@@ -398,5 +440,48 @@ class CommunicationReadThread extends Thread
             System.err.println("Problem with Client Read");
             //System.exit(1);
         }
+    }
+
+
+    private static BigInteger parseVal(String value, boolean beforeDec)
+    {
+        StringBuilder sb = new StringBuilder();
+        int index = value.indexOf('.');
+
+        if (beforeDec)
+        {
+            for (int i = 0; i < index; i++)
+            {
+                sb.append(value.charAt(i));
+            }
+        }
+        else
+        {
+            index++;
+
+            for (int i = index; i < value.length(); i++)
+            {
+                sb.append(value.charAt(i));
+            }
+        }
+        return new BigInteger(sb.toString());
+    }
+
+
+
+    private static byte[] stringToBytes(String response)
+    {
+        // parse the data using the commas
+        String[] byteValues = response.substring(1, response.length() - 1).split(",");
+
+        // create the byte array that will hold the encrypted message
+        byte[] bytes = new byte[byteValues.length];
+
+        // convert the encryption
+        for (int i=0, len=bytes.length; i<len; i++)
+        {
+            bytes[i] = Byte.parseByte(byteValues[i].trim());
+        }
+        return bytes;
     }
 }

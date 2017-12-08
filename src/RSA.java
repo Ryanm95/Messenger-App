@@ -1,142 +1,86 @@
-/*
-
- */
-
 import java.math.BigInteger;
 import java.util.Random;
+
+
 
 public class RSA
 {	// open class
 
     // two prime numbers
-    private BigInteger p;
-    private BigInteger q;
-
+    private BigInteger P;
+    private BigInteger Q;
     // product of prime numbers
     private BigInteger N;
-
     // (p-1)(q-1)
-    private BigInteger phi;
-
+    private BigInteger PHI;
     // encryption value
-    private BigInteger e;
-
+    private BigInteger E;
     // decryption value
-    private BigInteger d;
-
-    // ????
+    private BigInteger D;
     private int bitlength = 1024;
     private Random     r;
 
 
-    // class constructor 1
-    public RSA(int val1, int val2)
+    // class constructor
+    public RSA(int prime1, int prime2)
     {
-        //int pVal, int qVal
         r = new Random();
+        // if the user chooses for the file to choose prime numbers
+        this.P = BigInteger.probablePrime(bitlength, r);
+        this.Q = BigInteger.probablePrime(bitlength, r);
+        // calculate N by multiplying
+        this.N = this.P.multiply(this.Q);
+        // calculate PHI by subtracting and multiplying
+        this.PHI = this.P.subtract(BigInteger.ONE).multiply(this.Q.subtract(BigInteger.ONE));
+        // choose a valid E
+        this.E = BigInteger.probablePrime(bitlength / 2, r);
 
-        p = BigInteger.probablePrime(bitlength, r);
-        q = BigInteger.probablePrime(bitlength, r);
-
-        N = p.multiply(q);
-
-        phi = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
-
-        e = BigInteger.probablePrime(bitlength / 2, r);
-
-
-        while (phi.gcd(e).compareTo(BigInteger.ONE) > 0 && e.compareTo(phi) < 0)
+        while (this.PHI.gcd(this.E).compareTo(BigInteger.ONE) > 0 && this.E.compareTo(this.PHI) < 0)
         {
-            e.add(BigInteger.ONE);
+            this.E.add(BigInteger.ONE);
         }
-
-
-        d = e.modInverse(phi);
-    }
-    // class constructor 2
-    public RSA(BigInteger e, BigInteger d, BigInteger N)
-    {
-        this.e = e;
-        this.d = d;
-        this.N = N;
+        // chose a valid D
+        this.D = this.E.modInverse(this.PHI);
     }
 
 
     // Encrypt message
-    public byte[] encrypt(String message)//byte[] message)
+    public byte[] encrypt(String message)
     {
+        // convert the string into an array of bytes
         byte[] bytes = message.getBytes();
-
-        return (new BigInteger(bytes)).modPow(e, N).toByteArray();
+        // encrypt the message and then send the encrypted message back
+        return (new BigInteger(bytes)).modPow(this.E, this.N).toByteArray();
     }
+
+
 
     // Decrypt message
-    public String decrypt(byte[] message, BigInteger dValue, BigInteger nValue)
+    public String decrypt(byte[] encryptedMessage, BigInteger dVal, BigInteger nVal)
     {
-        return new String((new BigInteger(message)).modPow(dValue, nValue).toByteArray());
-
+        // perform the inverse using the key
+        BigInteger value = new BigInteger(encryptedMessage).modPow(dVal, nVal);
+        // turn the number into an array of bytes
+        byte[] decryptedBytes = value.toByteArray();
+        // convert the decrypted byte array to a string
+        String decryptedMessage = new String(decryptedBytes);
+        // the message has been decrypted
+        return decryptedMessage;
     }
 
 
-    public BigInteger getD()
-    {
-        return this.d;
-    }
-    public BigInteger getN()
-    {
-        return this.N;
-    }
 
+
+
+    public String getPubKey()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(this.D);
+        sb.append(".");
+        sb.append(this.N);
+
+        return sb.toString();
+    }
 
 }	// close class
-
-
-
-/*
-import java.util.Scanner;
-
-public class MainMethod
-{
-
-	public static void main(String[] args)
-    {
-    	Scanner scan = new Scanner(System.in);
-
-        String teststring;
-
-        System.out.println("Enter the plain text:");
-        teststring = scan.nextLine();
-
-        System.out.println("Encrypting String: " + teststring);
-        System.out.println("String in Bytes: " + bytesToString(teststring.getBytes()));
-
-
-        RSA rsa = new RSA();
-
-        // encrypt
-        byte[] encrypted = rsa.encrypt(teststring);
-
-        // decrypt
-        String decrypted = rsa.decrypt(encrypted, rsa.getD(), rsa.getN());
-
-        // System.out.println("Decrypting Bytes: " + bytesToString(decrypted));
-        System.out.println("Decrypted String: " + decrypted);
-
-
-        scan.close();
-    }
-
-
-
-	private static String bytesToString(byte[] encrypted)
-    {
-        String test = "";
-        for (byte b : encrypted)
-        {
-            test += Byte.toString(b);
-        }
-        return test;
-    }
-
-}
- */
