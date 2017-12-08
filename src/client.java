@@ -270,7 +270,9 @@ public class client extends JFrame implements ActionListener
             }
         }
     }
-
+    /*
+        We referenced http://www.javawithus.com/programs/prime-numbers for the prime number algorithm
+     */
     private boolean isPrime(int n) {
         if (n <= 1) {
             return false;
@@ -344,7 +346,6 @@ public class client extends JFrame implements ActionListener
                 history.insert ("Couldn't get I/O for "
                         + "the connection to: " + machineName , 0);
             }
-
         }
         else
         {
