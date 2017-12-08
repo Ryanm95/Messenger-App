@@ -1,3 +1,9 @@
+/*
+    Server class: Handles the server side of the connection. The server allows multiple users to connect to one central server.
+                  The server receives an encrypted message and sends to the users for the user to decrypt.
+
+ */
+
 import java.net.*;
 import java.io.*;
 import java.awt.*;
@@ -6,12 +12,12 @@ import javax.swing.*;
 import java.util.*;
 
 public class server extends JFrame {
-//
+
     // GUI items
-    JButton ssButton;
-    JLabel machineInfo;
-    JLabel portInfo;
-    JTextArea history;
+    JButton ssButton;       // start listening
+    JLabel machineInfo;     // label for machine info
+    JLabel portInfo;        // port info
+    JTextArea history;      // message history
     private boolean running;
 
     // Network Items
@@ -42,14 +48,14 @@ public class server extends JFrame {
         String machineAddress = null;
         try
         {
-            InetAddress addr = InetAddress.getLocalHost();
-            machineAddress = addr.getHostAddress();
+            InetAddress addr = InetAddress.getLocalHost();      // connect to server
+            machineAddress = addr.getHostAddress();             // get local host
         }
         catch (UnknownHostException e)
         {
             machineAddress = "127.0.0.1";
         }
-        machineInfo = new JLabel (machineAddress);
+        machineInfo = new JLabel (machineAddress);                  // add things to the client class
         container.add( machineInfo );
         portInfo = new JLabel (" Not Listening ");
         container.add( portInfo );
@@ -99,7 +105,7 @@ class ConnectionThread extends Thread
         try
         {
             gui.serverSocket = new ServerSocket(0);
-            gui.portInfo.setText("Listening on Port: " + gui.serverSocket.getLocalPort());
+            gui.portInfo.setText("Listening on Port: " + gui.serverSocket.getLocalPort());          // listening to clients
             System.out.println ("Connection Socket Created");
             try {
                 while (gui.serverContinue)
@@ -109,7 +115,7 @@ class ConnectionThread extends Thread
                     new CommunicationThread (gui.serverSocket.accept(), gui, gui.outStreamList, gui.names);
                 }
             }
-            catch (IOException e)
+            catch (IOException e)                               // exception
             {
                 System.err.println("Accept failed.");
                 System.exit(1);
@@ -135,12 +141,12 @@ class ConnectionThread extends Thread
 }
 
 
-class CommunicationThread extends Thread
+class CommunicationThread extends Thread                // communication thread
 {
     //private boolean serverContinue = true;
     private Socket clientSocket;
     private server gui;
-    private Vector<pair> outStreamList;
+    private Vector<pair> outStreamList;                 // pair holds name and address of the user
     private Vector<String> names;
 
 
@@ -152,11 +158,11 @@ class CommunicationThread extends Thread
         gui = ec3;
         outStreamList = oSL;
         names = n;
-        gui.history.insert ("Comminucating with Port" + clientSocket.getLocalPort()+"\n", 0);
+        gui.history.insert ("Comminucating with Port" + clientSocket.getLocalPort()+"\n", 0);       // adds message to history
         start();
     }
 
-    public void run()
+    public void run()           // run communication
     {
         System.out.println ("New Communication Thread Started");
 
@@ -171,7 +177,7 @@ class CommunicationThread extends Thread
 
             String inputLine;
 
-            while ((inputLine = in.readLine()) != null)
+            while ((inputLine = in.readLine()) != null)         // sends to each person
             {
                 System.out.println ("Server: " + inputLine);
                 gui.history.insert (inputLine+"\n", 0);
@@ -192,7 +198,7 @@ class CommunicationThread extends Thread
                     gui.serverContinue = false;
             }
 
-            outStreamList.remove(out);
+            outStreamList.remove(out);                      // disconnect from the server
             out.close();
             in.close();
             clientSocket.close();

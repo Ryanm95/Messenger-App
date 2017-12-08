@@ -1,3 +1,9 @@
+/*
+    Client class: Client class holds the user GUI and all of its functionality. It allows for the user to
+                  connect to the central server so that the users can send messages to each other.
+                  The client encrypts the message to be sent to the server. Once the server sends the messages,
+                  the clients that receive the messages have to decrypt the message and then the message can be read.
+ */
 
 import java.net.*;
 import java.io.*;
@@ -9,9 +15,9 @@ import javax.swing.*;
 public class client extends JFrame implements ActionListener
 {
     // GUI items
-    JButton sendButton;
-    JButton connectButton;
-    JTextField machineInfo;
+    JButton sendButton;             // send button
+    JButton connectButton;          // connect to server button
+    JTextField machineInfo;         // machine info
     JTextField portInfo;
     JTextField message;
     JTextArea history;
@@ -21,7 +27,7 @@ public class client extends JFrame implements ActionListener
     private JTextField numberTwo = new JTextField(3);
     Vector<String> members;                                     // names of people in the chat
     Vector<JButton> memberButton;                               // buttons with members names on them
-    Vector<String> selectedMembers;                             // names of members that mesage will sent to
+    Vector<String> selectedMembers;                             // names of members that message will sent to
 
     // Network Items
     boolean connected;
@@ -35,8 +41,8 @@ public class client extends JFrame implements ActionListener
         super( "Client" );
 
         // get content pane and set its layout
-        Container container = getContentPane();
-        container.setLayout (new BorderLayout ());
+        Container container = getContentPane();             // container
+        container.setLayout (new BorderLayout ());          // container layout
 
         // set up the North panel
         JPanel upperPanel = new JPanel ();
@@ -46,7 +52,7 @@ public class client extends JFrame implements ActionListener
         // create buttons
         connected = false;
 
-        upperPanel.add ( new JLabel ("Server Address: ", JLabel.RIGHT) );
+        upperPanel.add ( new JLabel ("Server Address: ", JLabel.RIGHT) );           // set up server info and all of its components
         machineInfo = new JTextField ("127.0.0.1");
         upperPanel.add( machineInfo );
 
@@ -62,6 +68,10 @@ public class client extends JFrame implements ActionListener
         history = new JTextArea ( 10, 20 );
         history.setEditable(false);
         container.add( new JScrollPane(history));
+
+        /*
+            Sets up the bottom part of the client GUI
+         */
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         JPanel sendMessage = new JPanel(new GridLayout(2,2));
@@ -82,9 +92,9 @@ public class client extends JFrame implements ActionListener
 
         container.add(bottomPanel, BorderLayout.SOUTH);
 
-        setupMenu();   //builds menu
-        setSize( 800, 500 );
-        setVisible( true );
+        setupMenu();                                        // builds menu
+        setSize( 800, 500 );                  // sets size of window
+        setVisible( true );                                 // make it visible
 
     } // end CountDown constructor
 
@@ -103,17 +113,23 @@ public class client extends JFrame implements ActionListener
         }
     }
 
+    /*
+        Sets ups the menu items and all of its functionality
+     */
+
     private void setupMenu(){
-        JMenu fileMenu = new JMenu("File");                     // file menu
+        JMenu fileMenu = new JMenu("File");
 
         JMenuItem aboutItem = new JMenuItem("About");
         fileMenu.add(aboutItem);
         aboutItem.addActionListener(
                 e -> JOptionPane.showMessageDialog( this,
-                        "Set up about\n", "About", JOptionPane.PLAIN_MESSAGE)
+                        "Authors: Ryan Moran      ->   rmoran8\n" +
+                                  "              Edgar Martinez  ->   emart9\n" +
+                                  "              Faraaz Khan      ->   aknah227\n", "About", JOptionPane.PLAIN_MESSAGE)
         );
 
-        JMenuItem serverItem = new JMenuItem("Make Server");
+        JMenuItem serverItem = new JMenuItem("Make Server");        // makes server
         fileMenu.add(serverItem);
         serverItem.addActionListener(
                 e -> {
@@ -122,11 +138,14 @@ public class client extends JFrame implements ActionListener
                 }
         );
 
-        JMenuItem helpItem = new JMenuItem("Help");
+        JMenuItem helpItem = new JMenuItem("Help");     // help menu
         fileMenu.add(helpItem);
         helpItem.addActionListener(
                 e -> JOptionPane.showMessageDialog( this,
-                        "Set up help\n", "Help", JOptionPane.PLAIN_MESSAGE)
+                        "Only one person should open a server in the file menu.\n" +
+                                 "The user can either enter 2 prime numbers in the Prime Numbers menu or have the computer get them from the file.\n" +
+                                 "The program checks if the numbers are prime and if they satisfy the other conditions.\n" +
+                                 "The user enters a message in the message box and clicks send to send the message.\n", "Help", JOptionPane.PLAIN_MESSAGE)
         );
 
         fileMenu.addSeparator();
@@ -154,12 +173,12 @@ public class client extends JFrame implements ActionListener
                 }
         );
 
-        setJMenuBar(bar);
+        setJMenuBar(bar);           // adds the menu items to the panel
         bar.add(fileMenu);
         bar.add(primeMenu);
     }
 
-    private void setupDialog(){
+    private void setupDialog(){                                     // sets up the dialog box
         JLabel primeOne = new JLabel("First Number: ");
         JLabel primeTwo = new JLabel("Second Number: ");
         JButton button = new JButton("Check/Enter");
@@ -218,7 +237,7 @@ public class client extends JFrame implements ActionListener
         }
     }
 
-    private boolean isPrime(int n) {
+    private boolean isPrime(int n) {                    // function to check if the number is prime
         if (n <= 1) {
             return false;
         }
@@ -230,7 +249,7 @@ public class client extends JFrame implements ActionListener
         return true;
     }
 
-    public void doSendMessage()
+    public void doSendMessage()                         // send the message
     {
         try
         {
@@ -243,7 +262,7 @@ public class client extends JFrame implements ActionListener
         }
     }
 
-    public void doManageConnection()
+    public void doManageConnection()                    // manage the connection
     {
         if (connected == false)
         {

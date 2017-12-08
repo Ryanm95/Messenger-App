@@ -1,7 +1,7 @@
 /*
     Names: Ryan Moran        ->    rmoran8
            Edgar Martinez    ->    emart9
-           Faraaz Khan       ->
+           Faraaz Khan       ->    akhan227
 
     Project 5: Messenger Application
 

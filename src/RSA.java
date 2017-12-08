@@ -1,7 +1,10 @@
+/*
+
+ */
+
 import java.math.BigInteger;
 import java.util.Random;
 
-//
 public class RSA
 {	// open class
 
@@ -31,11 +34,6 @@ public class RSA
     {
         //int pVal, int qVal
         r = new Random();
-
-        // calc p
-        //p = BigInteger.valueOf(new Long(pVal));
-        //q = BigInteger.valueOf(new Long(qVal));
-
 
         p = BigInteger.probablePrime(bitlength, r);
         q = BigInteger.probablePrime(bitlength, r);
