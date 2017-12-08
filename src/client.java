@@ -35,6 +35,7 @@ public class client extends JFrame implements ActionListener
     Vector<String> members;                                     // names of people in the chat
     Vector<JButton> memberButton;                               // buttons with members names on them
     Vector<String> selectedMembers;                             // names of members that mesage will sent to
+    Vector<JButton> vButtons;
 
     // Network Items
     boolean connected;
@@ -44,6 +45,9 @@ public class client extends JFrame implements ActionListener
     public String Name;
     Vector <String> allNames;
     Vector <String> specificNames;
+
+
+    JButton[] btns;
 
     // set up GUI
     public client()
@@ -55,6 +59,28 @@ public class client extends JFrame implements ActionListener
 
         specificNames = new Vector<String>();
 
+
+
+
+        /*
+        vButtons = new Vector<JButton>();
+
+        for (int i = 0; i < 5; i++)
+        {
+            JButton jb = new JButton("X");
+
+            jb.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    jb.setEnabled(false);
+                    specificNames.add(jb.getText());
+                }
+            });
+
+
+
+        }
+        */
 
         // get content pane and set its layout
         Container container = getContentPane();
@@ -101,25 +127,58 @@ public class client extends JFrame implements ActionListener
         bottomPanel.add(sendMessage);
         bottomPanel.add(groupPanel, BorderLayout.WEST);
         groupPanel.add(header);
-        for(String s : allNames) {
-            JButton temp = new JButton(s);
 
-            temp.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent e)
-                {
-                    temp.setEnabled(false);
+
+
+        btns = new JButton[3];
+
+        for (int i = 0; i < 3; i++)
+        {
+            JButton jb = new JButton("X");
+
+            jb.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    specificNames.add(jb.getText());
+                    JOptionPane.showMessageDialog( container,
+                            "hey bitch\n", "Help", JOptionPane.PLAIN_MESSAGE);
+
                 }
             });
-            groupPanel.add(temp);
 
-
+            jb.setVisible(false);
+            btns[i] = jb;
+            groupPanel.add(btns[i]);
         }
+        /*
+        groupPanel.add(bt1);
+        groupPanel.add(bt2);
+        groupPanel.add(bt3);
+*/
+        /*
+        for(JButton j : vButtons){
+            groupPanel.add(j);
+        }*/
+//        for(String s : allNames) {
+//            JButton temp = new JButton(s);
+//
+//            temp.addActionListener(new ActionListener()
+//            {
+//                public void actionPerformed(ActionEvent e)
+//                {
+//                    temp.setEnabled(false);
+//                }
+//            });
+//            temp.setVisible(true);
+//            groupPanel.add(temp);
+//
+//
+//        }
 
         container.add(bottomPanel, BorderLayout.SOUTH);
 
         setupMenu();   //builds menu
-        setSize( 800, 500 );
+        setSize( 800, 600 );
         setVisible( true );
         getNameDialog();
 //        System.out.println(Name);
@@ -355,7 +414,7 @@ public class client extends JFrame implements ActionListener
                         echoSocket.getInputStream()));
 
                 // start a new thread to read from the socket
-                new CommunicationReadThread (in, this, allNames, specificNames);
+                new CommunicationReadThread (in, this, allNames, specificNames, btns);
 
                 sendButton.setEnabled(true);
                 connected = true;
@@ -414,14 +473,16 @@ class CommunicationReadThread extends Thread
     private BufferedReader in;
     private Vector<String> allNames;
     private Vector<String> specificNames;
+    JButton btns[];
 
 
-    public CommunicationReadThread (BufferedReader inparam, client ec3, Vector<String> all, Vector<String> specific)
+    public CommunicationReadThread (BufferedReader inparam, client ec3, Vector<String> all, Vector<String> specific, JButton bts[])
     {
         in = inparam;
         gui = ec3;
         allNames = all;
         specificNames = specific;
+        btns = bts;
         start();
         gui.history.insert ("Communicating with Server\n", 0);
 
@@ -442,6 +503,13 @@ class CommunicationReadThread extends Thread
                 String temp = in.readLine();
 
                 parseNames(allNames, temp);
+
+
+                btns[0].setText(allNames.get(0));
+                btns[0].setVisible(true);
+
+
+
 
                 byte[] bytes = stringToBytes(inputLine);
 
