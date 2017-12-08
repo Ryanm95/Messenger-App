@@ -174,7 +174,6 @@ class CommunicationThread extends Thread
         names = n;
 
         BufferedReader in;
-        //PrintWriter out;
         String inputLine;
 
         //read in the clients username
@@ -208,10 +207,6 @@ class CommunicationThread extends Thread
         System.out.println ("New Communication Thread Started");
 
         try {
-//            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),
-//                    true);
-//            outStreamList.add(out);
-
             BufferedReader in = new BufferedReader(
                     new InputStreamReader( clientSocket.getInputStream()));
 

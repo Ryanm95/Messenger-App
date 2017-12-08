@@ -292,7 +292,7 @@ public class client extends JFrame implements ActionListener
             String pubKey = rsa.getPubKey();
 
             // encrypt the message
-            byte[] encrypt = rsa.encrypt(message.getText());
+            byte[] encrypt = rsa.encrypt(Name + " : " + message.getText());
 
             String encryption = Arrays.toString(encrypt);
 
