@@ -409,6 +409,10 @@ class CommunicationReadThread extends Thread
             {
                 // get the public key
                 String pubKey = in.readLine();
+                String allNames = in.readLine();
+                System.out.println(allNames);
+
+
                 byte[] bytes = stringToBytes(inputLine);
 
                 // parse the public key

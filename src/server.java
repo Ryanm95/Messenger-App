@@ -189,6 +189,11 @@ class CommunicationThread extends Thread
             names.add(inputLine);
 
             gui.history.insert (inputLine + " :Connected\n", 0); //display connected
+            if(!names.contains(inputLine)){
+                names.add(inputLine);
+            }
+            //System.out.println(names);
+
 
             //send list of people to client side
             for ( PrintWriter out1: outStreamList ) {
@@ -222,6 +227,11 @@ class CommunicationThread extends Thread
                 System.out.println ("Server: " + encrypt);
                 gui.history.insert (encrypt+"\n", 0);
 
+
+
+                String temp = combineNames();
+
+
                 // Loop through the outStreamList and send to all "active" streams
                 //out.println(inputLine);
                 for ( PrintWriter out1: outStreamList )
@@ -229,6 +239,7 @@ class CommunicationThread extends Thread
                     System.out.println ("Sending Message");
                     out1.println (inputLine);
                     out1.println(pubKey);
+                    out1.println(temp);
                 }
 
                 if (inputLine.equals("Bye."))
