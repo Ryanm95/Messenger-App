@@ -218,11 +218,13 @@ class CommunicationThread extends Thread
             String inputLine;
             String pubKey;
             String encrypt;
+            String specificNames;
 
             while ((inputLine = in.readLine()) != null)
             {
                 pubKey = in.readLine();
                 encrypt = in.readLine();
+                specificNames = in.readLine();
 
                 System.out.println ("Server: " + encrypt);
                 gui.history.insert (encrypt+"\n", 0);
@@ -240,6 +242,7 @@ class CommunicationThread extends Thread
                     out1.println (inputLine);
                     out1.println(pubKey);
                     out1.println(temp);
+                    out1.println(specificNames);
                 }
 
                 if (inputLine.equals("Bye."))

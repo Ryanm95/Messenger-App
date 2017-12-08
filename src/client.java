@@ -390,6 +390,7 @@ public class client extends JFrame implements ActionListener
             out.println(encryption);
             out.println(pubKey);
             out.println(bytes);
+            out.println(specificNames);
 
             message.setText("");
         }
@@ -414,7 +415,7 @@ public class client extends JFrame implements ActionListener
                         echoSocket.getInputStream()));
 
                 // start a new thread to read from the socket
-                new CommunicationReadThread (in, this, allNames, specificNames, btns);
+                new CommunicationReadThread (in, this, allNames, specificNames, btns, Name);
 
                 sendButton.setEnabled(true);
                 connected = true;
@@ -474,15 +475,18 @@ class CommunicationReadThread extends Thread
     private Vector<String> allNames;
     private Vector<String> specificNames;
     JButton btns[];
+    String Name;
 
 
-    public CommunicationReadThread (BufferedReader inparam, client ec3, Vector<String> all, Vector<String> specific, JButton bts[])
+    public CommunicationReadThread (BufferedReader inparam, client ec3, Vector<String> all, Vector<String> specific, JButton bts[], String n)
     {
         in = inparam;
         gui = ec3;
         allNames = all;
         specificNames = specific;
+        Name = n;
         btns = bts;
+
         start();
         gui.history.insert ("Communicating with Server\n", 0);
 
@@ -501,8 +505,11 @@ class CommunicationReadThread extends Thread
                 // get the public key
                 String pubKey = in.readLine();
                 String temp = in.readLine();
+                String spec = in.readLine();
 
                 parseNames(allNames, temp);
+
+                parseNames(specificNames, spec);
 
 
                 for (int i = 0; i < allNames.size(); i++)
@@ -512,30 +519,34 @@ class CommunicationReadThread extends Thread
                 }
 
 
+                if (specificNames.contains(Name))
+                {
+                    byte[] bytes = stringToBytes(inputLine);
 
+                    // parse the public key
+                    BigInteger e = parseVal(pubKey, true);
+                    BigInteger n = parseVal(pubKey, false);
 
+                    // decrypt the message
+                    String decrypt = rsa.decrypt(bytes, e, n);
 
-                byte[] bytes = stringToBytes(inputLine);
+                    System.out.println("HELLO " + decrypt);
+                    //check to see if list is updated
+                    if (inputLine.substring(0, 2).equals(null)){
+                        System.out.println("received active list = " + inputLine);
+                    }
 
-                // parse the public key
-                BigInteger e = parseVal(pubKey, true);
-                BigInteger n = parseVal(pubKey, false);
+                    else {
+                        gui.history.insert(decrypt + "\n", 0);
+                    }
 
-                // decrypt the message
-                String decrypt = rsa.decrypt(bytes, e, n);
-
-                System.out.println("HELLO " + decrypt);
-                //check to see if list is updated
-                if (inputLine.substring(0, 2).equals(null)){
-                    System.out.println("received active list = " + inputLine);
+                    if (inputLine.equals("Bye."))
+                        break;
                 }
 
-                else {
-                    gui.history.insert(decrypt + "\n", 0);
-                }
 
-                if (inputLine.equals("Bye."))
-                    break;
+
+
 
             }
 
