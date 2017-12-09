@@ -125,7 +125,10 @@ public class client extends JFrame implements ActionListener
         fileMenu.add(aboutItem);
         aboutItem.addActionListener(
                 e -> JOptionPane.showMessageDialog( this,
-                        "Set up about\n", "About", JOptionPane.PLAIN_MESSAGE)
+                        "The 5nd programing assignment for CS 342: \n" +
+                                "  Networked Chat with RSA Encryption/Decryption\n" +
+                                "  Authors: Edgar Martinez-Ayala, Ryan Moran, and Faraaz Khan\n" +
+                                "  Program Written on 12/4/17\n", "About", JOptionPane.PLAIN_MESSAGE)
         );
 
         JMenuItem serverItem = new JMenuItem("Make Server");
