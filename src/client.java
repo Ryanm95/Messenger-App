@@ -5,8 +5,6 @@
                   the clients that receive the messages have to decrypt the message and then the message can be read.
  */
 
-import oracle.jrockit.jfr.StringConstantPool;
-
 import java.net.*;
 import java.io.*;
 import java.awt.*;
@@ -35,7 +33,6 @@ public class client extends JFrame implements ActionListener
     Vector<String> members;                                     // names of people in the chat
     Vector<JButton> memberButton;                               // buttons with members names on them
     Vector<String> selectedMembers;                             // names of members that mesage will sent to
-    Vector<JButton> vButtons;
 
     // Network Items
     boolean connected;
@@ -43,44 +40,12 @@ public class client extends JFrame implements ActionListener
     PrintWriter out;
     BufferedReader in;
     public String Name;
-    Vector <String> allNames;
-    Vector <String> specificNames;
-
-
-    JButton[] btns;
+    Vector <String> names;
 
     // set up GUI
     public client()
     {
         super( "Client" );
-
-
-        allNames = new Vector<String>();
-
-        specificNames = new Vector<String>();
-
-
-
-
-        /*
-        vButtons = new Vector<JButton>();
-
-        for (int i = 0; i < 5; i++)
-        {
-            JButton jb = new JButton("X");
-
-            jb.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    jb.setEnabled(false);
-                    specificNames.add(jb.getText());
-                }
-            });
-
-
-
-        }
-        */
 
         // get content pane and set its layout
         Container container = getContentPane();
@@ -128,57 +93,10 @@ public class client extends JFrame implements ActionListener
         bottomPanel.add(groupPanel, BorderLayout.WEST);
         groupPanel.add(header);
 
-
-
-        btns = new JButton[3];
-
-        for (int i = 0; i < 3; i++)
-        {
-            JButton jb = new JButton("X");
-
-            jb.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    specificNames.add(jb.getText());
-                    JOptionPane.showMessageDialog( container,
-                            "hey bitch\n", "Help", JOptionPane.PLAIN_MESSAGE);
-
-                }
-            });
-
-            jb.setVisible(false);
-            btns[i] = jb;
-            groupPanel.add(btns[i]);
-        }
-        /*
-        groupPanel.add(bt1);
-        groupPanel.add(bt2);
-        groupPanel.add(bt3);
-*/
-        /*
-        for(JButton j : vButtons){
-            groupPanel.add(j);
-        }*/
-//        for(String s : allNames) {
-//            JButton temp = new JButton(s);
-//
-//            temp.addActionListener(new ActionListener()
-//            {
-//                public void actionPerformed(ActionEvent e)
-//                {
-//                    temp.setEnabled(false);
-//                }
-//            });
-//            temp.setVisible(true);
-//            groupPanel.add(temp);
-//
-//
-//        }
-
         container.add(bottomPanel, BorderLayout.SOUTH);
 
         setupMenu();   //builds menu
-        setSize( 800, 600 );
+        setSize( 800, 500 );
         setVisible( true );
         getNameDialog();
 //        System.out.println(Name);
@@ -352,9 +270,7 @@ public class client extends JFrame implements ActionListener
             }
         }
     }
-    /*
-        We referenced http://www.javawithus.com/programs/prime-numbers for the prime number algorithm
-     */
+
     private boolean isPrime(int n) {
         if (n <= 1) {
             return false;
@@ -383,14 +299,10 @@ public class client extends JFrame implements ActionListener
 
             String bytes = bytesToString(message.getText().getBytes());
 
-            // create a list of clients this message will be going to
-
-
             // send the message
             out.println(encryption);
             out.println(pubKey);
             out.println(bytes);
-            out.println(specificNames);
 
             message.setText("");
         }
@@ -415,7 +327,7 @@ public class client extends JFrame implements ActionListener
                         echoSocket.getInputStream()));
 
                 // start a new thread to read from the socket
-                new CommunicationReadThread (in, this, allNames, specificNames, btns, Name);
+                new CommunicationReadThread (in, this);
 
                 sendButton.setEnabled(true);
                 connected = true;
@@ -432,6 +344,7 @@ public class client extends JFrame implements ActionListener
                 history.insert ("Couldn't get I/O for "
                         + "the connection to: " + machineName , 0);
             }
+
         }
         else
         {
@@ -472,21 +385,12 @@ class CommunicationReadThread extends Thread
     //private Socket clientSocket;
     private client gui;
     private BufferedReader in;
-    private Vector<String> allNames;
-    private Vector<String> specificNames;
-    JButton btns[];
-    String Name;
 
 
-    public CommunicationReadThread (BufferedReader inparam, client ec3, Vector<String> all, Vector<String> specific, JButton bts[], String n)
+    public CommunicationReadThread (BufferedReader inparam, client ec3)
     {
         in = inparam;
         gui = ec3;
-        allNames = all;
-        specificNames = specific;
-        Name = n;
-        btns = bts;
-
         start();
         gui.history.insert ("Communicating with Server\n", 0);
 
@@ -504,49 +408,27 @@ class CommunicationReadThread extends Thread
             {
                 // get the public key
                 String pubKey = in.readLine();
-                String temp = in.readLine();
-                String spec = in.readLine();
+                byte[] bytes = stringToBytes(inputLine);
 
-                parseNames(allNames, temp);
+                // parse the public key
+                BigInteger e = parseVal(pubKey, true);
+                BigInteger n = parseVal(pubKey, false);
 
-                parseNames(specificNames, spec);
+                // decrypt the message
+                String decrypt = rsa.decrypt(bytes, e, n);
 
-
-                for (int i = 0; i < allNames.size(); i++)
-                {
-                    btns[i].setText(allNames.get(i));
-                    btns[i].setVisible(true);
+                System.out.println("HELLO " + decrypt);
+                //check to see if list is updated
+                if (inputLine.substring(0, 2).equals(null)){
+                    System.out.println("received active list = " + inputLine);
                 }
 
-
-                if (specificNames.contains(Name))
-                {
-                    byte[] bytes = stringToBytes(inputLine);
-
-                    // parse the public key
-                    BigInteger e = parseVal(pubKey, true);
-                    BigInteger n = parseVal(pubKey, false);
-
-                    // decrypt the message
-                    String decrypt = rsa.decrypt(bytes, e, n);
-
-                    System.out.println("HELLO " + decrypt);
-                    //check to see if list is updated
-                    if (inputLine.substring(0, 2).equals(null)){
-                        System.out.println("received active list = " + inputLine);
-                    }
-
-                    else {
-                        gui.history.insert(decrypt + "\n", 0);
-                    }
-
-                    if (inputLine.equals("Bye."))
-                        break;
+                else {
+                    gui.history.insert(decrypt + "\n", 0);
                 }
 
-
-
-
+                if (inputLine.equals("Bye."))
+                    break;
 
             }
 
@@ -557,19 +439,6 @@ class CommunicationReadThread extends Thread
         {
             System.err.println("Problem with Client Read");
             //System.exit(1);
-        }
-    }
-
-
-    private static void parseNames(Vector<String> list, String names)
-    {
-        String[] listNames = names.split(" ");
-
-        list.clear();
-
-        for (String s : listNames)
-        {
-            list.add(s);
         }
     }
 
