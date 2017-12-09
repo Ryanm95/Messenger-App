@@ -1,11 +1,8 @@
 import java.math.BigInteger;
 import java.util.Random;
 
-
-
 public class RSA
-{	// open class
-
+{
     // two prime numbers
     private BigInteger P;
     private BigInteger Q;
@@ -43,7 +40,6 @@ public class RSA
         this.D = this.E.modInverse(this.PHI);
     }
 
-
     // Encrypt message
     public byte[] encrypt(String message)
     {
@@ -52,8 +48,6 @@ public class RSA
         // encrypt the message and then send the encrypted message back
         return (new BigInteger(bytes)).modPow(this.E, this.N).toByteArray();
     }
-
-
 
     // Decrypt message
     public String decrypt(byte[] encryptedMessage, BigInteger dVal, BigInteger nVal)
@@ -68,10 +62,7 @@ public class RSA
         return decryptedMessage;
     }
 
-
-
-
-
+    // return the public key to the user
     public String getPubKey()
     {
         StringBuilder sb = new StringBuilder();
@@ -82,5 +73,4 @@ public class RSA
 
         return sb.toString();
     }
-
-}	// close class
+}

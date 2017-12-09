@@ -1,7 +1,7 @@
 import java.io.PrintWriter;
 
 /**
- * @author Edgar Martinez-Ayala, Ryan Moran, and  Ahmed
+ * @author Edgar Martinez-Ayala, Ryan Moran, and  Ahmed Khan
  * Pair class - Class that contains an object that
  * 			    holds a pair. This pair is used to implement
  * 				hold the adress of each client and the name
